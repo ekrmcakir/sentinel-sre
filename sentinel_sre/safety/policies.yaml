@@ -1,0 +1,56 @@
+version: "1.0"
+environment: "production"
+
+# Global Guardrail Boundaries
+global:
+  max_consecutive_actions_per_hour: 5
+  cooldown_between_actions_seconds: 30
+  dry_run_default: false
+
+# Action Classification Matrix
+policies:
+  # Safe Auto-Remediation Allowed (Zero-Touch)
+  - action_type: "sqs:start_dlq_redrive"
+    risk_level: "LOW"
+    auto_approve: true
+    max_messages_per_run: 50000
+    description: "Re-drive messages from Dead Letter Queue back to primary processing queue."
+
+  - action_type: "lambda:set_concurrency"
+    risk_level: "MEDIUM"
+    auto_approve: true
+    max_allowed_concurrency: 500
+    min_allowed_concurrency: 5
+    description: "Adjust reserved or provisioned concurrency for Lambda function during traffic burst."
+
+  - action_type: "lambda:update_memory"
+    risk_level: "MEDIUM"
+    auto_approve: true
+    max_memory_mb: 3008
+    description: "Scale Lambda allocated memory to alleviate OOM / execution timeouts."
+
+  - action_type: "ecs:recycle_service"
+    risk_level: "MEDIUM"
+    auto_approve: true
+    min_healthy_percent: 100
+    description: "Perform zero-downtime rolling task restart for unhealthy ECS container service."
+
+  # High-Risk Actions (Strict Human Gate Required)
+  - action_type: "rds:reboot_db_instance"
+    risk_level: "HIGH"
+    auto_approve: false
+    requires_approval_role: "sre-lead"
+    description: "Reboot relational database instance (potential downtime impact)."
+
+  - action_type: "route53:failover_traffic"
+    risk_level: "HIGH"
+    auto_approve: false
+    requires_approval_role: "incident-commander"
+    description: "Shift regional DNS traffic during major zone failure."
+
+# Explicitly Forbidden Actions (Blocked without exception)
+denylist:
+  - "iam:delete_*"
+  - "s3:delete_bucket*"
+  - "rds:delete_db_instance"
+  - "*:terminate_all"
