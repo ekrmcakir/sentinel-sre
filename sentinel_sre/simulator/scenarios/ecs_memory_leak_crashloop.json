@@ -1,0 +1,13 @@
+{
+  "scenario_id": "sc-ecs-03",
+  "name": "User Session Service OOMKilled CrashLoop",
+  "service": "ecs",
+  "resource_name": "user-session-api",
+  "resource_arn": "arn:aws:ecs:us-east-1:123456789012:service/production-cluster/user-session-api",
+  "alarm_name": "UserSession_MemoryUtilization_Spike",
+  "metric_name": "MemoryUtilization",
+  "threshold": 85.0,
+  "current_value": 99.4,
+  "severity": "P1_CRITICAL",
+  "description": "Gradual memory leak in session caching service led to Linux OOM killer terminating essential tasks (exit code 137)."
+}

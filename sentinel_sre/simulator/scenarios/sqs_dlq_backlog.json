@@ -1,0 +1,13 @@
+{
+  "scenario_id": "sc-sqs-02",
+  "name": "Order Processing SQS Dead Letter Queue Accumulation",
+  "service": "sqs",
+  "resource_name": "order-processing-dlq",
+  "resource_arn": "arn:aws:sqs:us-east-1:123456789012:order-processing-dlq",
+  "alarm_name": "OrderProcessing_DLQ_Backlog_Alarm",
+  "metric_name": "ApproximateNumberOfMessagesVisible",
+  "threshold": 50.0,
+  "current_value": 1450.0,
+  "severity": "P2_HIGH",
+  "description": "Transient database timeout caused 1,450 order messages to spill into DLQ. Database is now healthy."
+}

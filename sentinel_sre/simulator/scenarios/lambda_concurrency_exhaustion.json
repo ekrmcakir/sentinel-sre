@@ -1,0 +1,13 @@
+{
+  "scenario_id": "sc-lambda-01",
+  "name": "Lambda Concurrency Saturation & Throttling",
+  "service": "lambda",
+  "resource_name": "payments-authorization-service",
+  "resource_arn": "arn:aws:lambda:us-east-1:123456789012:function:payments-authorization-service",
+  "alarm_name": "PaymentsLambda_HighThrottles_Breach",
+  "metric_name": "Throttles",
+  "threshold": 5.0,
+  "current_value": 142.0,
+  "severity": "P1_CRITICAL",
+  "description": "Flash sale traffic spike caused Lambda reserved concurrency (10) to saturate, throttling checkout requests."
+}
