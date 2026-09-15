@@ -1,0 +1,57 @@
+# 📑 Incident Post-Mortem: {{ incident.title }}
+
+**Incident ID:** `{{ incident.incident_id }}`  
+**Status:** `{{ incident.status.value }}`  
+**Severity:** `{{ incident.severity.value }}`  
+**Service:** `{{ incident.alarm.service.upper() }}` (`{{ incident.alarm.resource_name }}`)  
+**Mean Time to Resolve (MTTR):** **{{ "%.1f"|format(incident.mttr_seconds or 0.0) }}s**  
+
+---
+
+## 🎯 Executive Summary
+At **{{ incident.created_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}**, CloudWatch Alarm `{{ incident.alarm.alarm_name }}` breached its configured threshold (Observed: `{{ incident.alarm.current_value }}`, Threshold: `{{ incident.alarm.threshold }}`).
+Sentinel-SRE autonomously ingested telemetry, conducted root-cause analysis, evaluated policy-as-code safety guardrails, executed remediation, and verified recovery.
+
+---
+
+## 🔍 Root Cause Analysis (RCA)
+* **Primary Hypothesis:** {{ rca.primary_hypothesis.summary }}
+* **Confidence Score:** **{{ "%.1f"|format(rca.primary_hypothesis.confidence_score * 100) }}%**
+* **Diagnostic Summary:** {{ rca.reasoning_summary }}
+
+### Key Evidence:
+{% for ev in rca.primary_hypothesis.evidence %}
+- {{ ev }}
+{% endfor %}
+
+---
+
+## 🛡️ Safety & Policy-as-Code Evaluation
+* **Action Evaluated:** `{{ action.action_type }}`
+* **Risk Classification:** `{{ safety_verdict.risk_level.value }}`
+* **Blast Radius Score:** `{{ "%.2f"|format(safety_verdict.blast_radius_score) }} / 1.00`
+* **Autonomous Execution Approved:** `{{ safety_verdict.allowed }}`
+* **Policy Verdict:** {{ safety_verdict.reason }}
+
+---
+
+## ⚡ Remediation & Self-Healing Execution
+* **Action Type:** `{{ action.action_type }}`
+* **Execution Duration:** `{{ "%.1f"|format(execution_result.duration_ms) }} ms`
+* **Success:** `{{ execution_result.success }}`
+* **Applied Parameters:**
+```json
+{{ action.parameters | tojson(indent=2) }}
+```
+
+---
+
+## ⏱️ Incident Timeline
+| Time (UTC) | Phase | Action / Event |
+| :--- | :--- | :--- |
+{% for event in incident.timeline %}
+| {{ event.timestamp }} | `{{ event.phase }}` | {{ event.message }} |
+{% endfor %}
+
+---
+*Generated automatically by Sentinel-SRE Autonomous Cloud Engine.*
